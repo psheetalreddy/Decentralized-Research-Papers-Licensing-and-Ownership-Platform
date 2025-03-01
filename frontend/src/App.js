@@ -1,38 +1,55 @@
-import React, { useState } from "react";
-import Web3 from "web3";
-import axios from "axios";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import UploadPaper from "./components/UploadPaper";
+import ListPapers from "./components/ListPapers";
+import PurchasePaper from "./components/PurchasePaper";
+import UserDashboard from "./components/UserDashboard";
+import ExtendBorrow from "./components/ExtendBorrow";
+import CitePaper from "./components/CitePaper";
+import Login from "./components/login";
 
-const web3 = new Web3(window.ethereum);
+console.log("App component loaded");
 
 const App = () => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [file, setFile] = useState(null);
-
-  const handleUpload = async () => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const ipfsResponse = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
-      headers: { pinata_api_key: "YOUR_PINATA_API_KEY", pinata_secret_api_key: "YOUR_PINATA_SECRET" },
-    });
-
-    const ipfsHash = ipfsResponse.data.IpfsHash;
-    
-    await axios.post("http://localhost:5000/upload", { title, author, ipfsHash, price: "0.1" });
-
-    alert("Paper uploaded!");
-  };
-
   return (
-    <div>
-      <h2>Upload Research Paper</h2>
-      <input type="text" placeholder="Title" onChange={(e) => setTitle(e.target.value)} />
-      <input type="text" placeholder="Author" onChange={(e) => setAuthor(e.target.value)} />
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={handleUpload}>Upload</button>
-    </div>
+    <Router>
+      <div>
+        <h1>Research Paper Marketplace</h1>
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/upload">Upload Paper</Link></li>
+            <li><Link to="/purchase">Purchase Paper</Link></li>
+            <li><Link to="/dashboard">Dashboard</Link></li>
+            <li><Link to="/extend-borrow">Extend Borrow</Link></li>
+            <li><Link to="/cite">Cite Paper</Link></li>
+            <li><Link to="/login">Login</Link></li>
+          </ul>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<ListPapers />} />
+          <Route path="/upload" element={<UploadPaper />} />
+          <Route path="/purchase" element={<PurchasePaper />} />
+          <Route path="/dashboard" element={<UserDashboard userAddress="0xYourAddress" />} />
+          <Route path="/extend-borrow" element={<ExtendBorrow />} />
+          <Route path="/cite" element={<CitePaper />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
 export default App;
+
+// const App = () => {
+//   return (
+//     <div>
+//       <h1>React is Working!</h1>
+//       <p>If you see this, the app is rendering correctly.</p>
+//     </div>
+//   );
+// };
+
+// export default App;
